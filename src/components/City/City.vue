@@ -1,6 +1,8 @@
 <!-- 省市区插件 -->
 <template>
   <div class="city">
+    <button @click="open">打开</button>
+    <br>
     <input v-model="valA"/>
     <button @click="openA">展示</button>
 
@@ -10,8 +12,7 @@
     <p>结果：</p>
     <div>{{result}}</div>
 
-    <city v-model="show"
-          :data="cityData"
+    <dwb-city v-model="show"
           :city="city"
           ref="city"
           @change="getData"/>
@@ -19,9 +20,13 @@
 </template>
 
 <script>
+// import { dwbCity } from 'dwb-city'
 import cityData from '@/assets/json/city.json'
 
 export default {
+  // components: {
+  //   dwbCity
+  // },
   data () {
     return {
       cityData,

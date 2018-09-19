@@ -7,6 +7,7 @@ import router from './router'
 import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
 
+import city from 'dwb-city'
 const requireComponent = require.context('./components/Common', false, /[a-zA-Z]*\.vue/)
 
 requireComponent.keys().forEach(fileName => {
@@ -17,6 +18,7 @@ requireComponent.keys().forEach(fileName => {
   Vue.component(componentName, componentConfig.default || componentConfig)
 })
 
+Vue.use(city)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

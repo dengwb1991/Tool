@@ -1,8 +1,25 @@
 <template>
   <div class="home">
-    <p @click="$router.push('/city')">City</p>
+    <p @click="jump('city')">City</p>
+    <p @click="jump('tab')">Tab</p>
+    <p @click="jump('drawer')">Drawer</p>
   </div>
 </template>
+
+<script>
+import { showMsg } from 'dwb-console'
+
+export default {
+  methods: {
+    jump (name) {
+      this.$router.push(name)
+    }
+  },
+  created () {
+    showMsg && showMsg()
+  }
+}
+</script>
 
 <style lang="less" scoped>
 .home {
