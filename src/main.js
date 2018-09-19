@@ -8,6 +8,8 @@ import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
 
 import city from 'dwb-city'
+// import drawer from 'dwb-vue-drawer'
+
 const requireComponent = require.context('./components/Common', false, /[a-zA-Z]*\.vue/)
 
 requireComponent.keys().forEach(fileName => {
@@ -19,6 +21,7 @@ requireComponent.keys().forEach(fileName => {
 })
 
 Vue.use(city)
+// Vue.use(drawer)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

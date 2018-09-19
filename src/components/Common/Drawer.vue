@@ -1,4 +1,4 @@
-<!-- 弹出框 -->
+<!-- Drawer -->
 <template>
   <div class="drawer">
     <div :class="['cover-mask', maskShow]"
@@ -23,7 +23,7 @@ const STYLE = {
   left: {
     bottom: 0,
     left: 0,
-    minWidth: '2rem',
+    minWidth: '2em',
     height: '100vh',
     transform: 'translate3d(-100%, 0, 0)'
   },
@@ -37,7 +37,7 @@ const STYLE = {
   right: {
     top: 0,
     right: 0,
-    minWidth: '2rem',
+    minWidth: '2em',
     height: '100vh',
     transform: 'translate3d(100%, 0, 0)'
   }

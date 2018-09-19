@@ -4,7 +4,7 @@
     <div class="open" @click="show('left')">LEFT</div>
     <div class="open" @click="show('top')">TOP</div>
     <div class="open" @click="show('right')">RIGHT</div>
-    <Drawer :visible.sync="visible"
+    <DwbVueDrawer :visible.sync="visible"
             :position="position"
             :lockScroll="lockScroll"
             :maskClosable="maskClosable"
@@ -21,12 +21,16 @@
         <li>555</li>
         <li>666</li>
       </ul>
-    </Drawer>
+    </DwbVueDrawer>
   </div>
 </template>
 
 <script>
+import { DwbVueDrawer } from 'dwb-vue-drawer'
 export default {
+  components: {
+    DwbVueDrawer
+  },
   data () {
     return {
       visible: false,
