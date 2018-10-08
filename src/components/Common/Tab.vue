@@ -1,6 +1,9 @@
 <template>
-  <div class="tab">
-    <ul :style="[ulStyle, ulWidth]">
+  <div class="tab" :style="ulStyle">
+    <ul :style="[ulStyle, ulWidth, ulTransform, ulTransition]"
+        @touchstart="doTouchStart($event)"
+        @touchmove="doTouchMove($event)"
+        @touchend="doTouchEnd($event)">
       <li ref="tab"
           v-for="(item, index) in config.data.items"
           :key="index"
@@ -9,7 +12,8 @@
           @click="tap({ item, index })">
         {{config.data.name ? item[config.data.name] : item}}
       </li>
-      <div class="line"
+      <div ref="line"
+           class="line"
            v-if="config.line.use"
            :style="[lineStyle, lineWidth, lineLeft]"></div>
     </ul>
@@ -20,8 +24,13 @@
 export default {
   data () {
     return {
-      liWidth: 0,
-      activeIndex: this.config.data.active
+      liWidth: 0, // 元素真实宽度
+      lineRealWidth: 0, // 线真实宽度
+      tabTransX: 0, // tab x轴位置
+      tabTransition: null, // tab 动画
+      activeIndex: this.config.data.active, // 选中元素的下标
+      tabsIns: null,
+      surplusWidth: 0
     }
   },
   props: {
@@ -32,16 +41,19 @@ export default {
           data: { // 数据
             items: [{ name: 'AA' }, { name: 'BB' }, { name: 'CC' }, { name: 'DD' }, { name: 'EE' }, { name: 'AA' }, { name: 'BB' }, { name: 'CC' }], // 数据
             // items: [{ name: 'AA' }, { name: 'BB' }, { name: 'CC' }, { name: 'DD' }], // 数据
-            width: '3rem',
+            // items: [{ name: 'AA' }, { name: 'BB' }],
+            // items: [{ name: 'AA' }, { name: 'BB' },{ name: 'AA' }, { name: 'BB' },{ name: 'AA' }, { name: 'BB' }],
+            width: '2.5rem',
             name: 'name', // 如果为对象 展示key
-            active: 1, // * 选中位置
+            active: 0, // * 选中位置
             color: '#999', // 字体颜色
+            background: '#FFF', // 背景颜色
             highlight: '#A5884D' // * 高亮
           },
           line: { // 线
             use: true,
-            height: '3px',
-            width: null,
+            height: '0.08rem',
+            width: '1rem',
             color: '#A5884D'
           }
         }
@@ -49,6 +61,16 @@ export default {
     }
   },
   computed: {
+    ulTransform () { // tab位置
+      return {
+        '-webkit-transform': `translateX(${this.tabTransX}px)`
+      }
+    },
+    ulTransition () { // tab动画
+      return {
+        '-webkit-transition': this.tabTransition
+      }
+    },
     ulWidth () { // tab宽度
       const data = this.config.data
       const unitArr = data.width ? this.getUnitArr(data.width) : null
@@ -57,8 +79,10 @@ export default {
         width: data.items.length > 4 ? `${data.items.length * width}${unitArr[2]}` : '100%'
       }
     },
-    ulStyle () {
-      return {}
+    ulStyle () { // tab基本样式
+      return {
+        background: this.config.data.background
+      }
     },
     defaultColor () { // 默认字体颜色
       return {
@@ -83,35 +107,87 @@ export default {
     },
     lineLeft () { // 线位置
       return {
-        left: `${this.activeIndex * this.liWidth}px`
+        left: `${this.activeIndex * this.liWidth + ((this.liWidth - this.lineRealWidth) / 2)}px`
       }
     }
   },
   methods: {
+    doTouchStart (event) {
+      event.stopPropagation()
+      this.tabTransition = null
+      this.tabsIns = {
+        ...this.tabsIns,
+        X: event.touches[0].pageX - parseFloat(this.tabTransX)
+      }
+    },
+    doTouchMove (event) {
+      event.preventDefault()
+      const surplusWidth = this.surplusWidth
+
+      let transX = event.touches[0].pageX - this.tabsIns.X
+      if (surplusWidth + event.touches[0].pageX - this.tabsIns.X < 0) {
+        transX = -surplusWidth - (this.tabsIns.X - event.touches[0].pageX - surplusWidth) / 8
+      } else if (transX > 0) {
+        transX = transX / 8
+      }
+      this.tabTransX = transX
+    },
+    doTouchEnd (event) {
+      if (this.tabTransX > 0) {
+        this.tabTransX = 0
+      } else if (this.tabTransX < -this.surplusWidth) {
+        this.tabTransX = -this.surplusWidth
+      }
+      this.duration = '200ms'
+    },
     getUnitArr (data) { // 100px ['100px', '100', 'px']
       return /^([0-9|\\.]+)([a-zA-Z]+)$/.exec(data)
     },
     getLiWidth () { // 获得标签宽度
       this.liWidth = this.$refs.tab[0].offsetWidth
     },
+    getLineRealWidth () { // 获得线真实宽度
+      this.lineRealWidth = this.$refs.line.offsetWidth || this.$refs.tab[0].offsetWidth
+    },
+    tabPlace () { // tab位置
+      this.tabTransition = '-webkit-transform 0.4s linear 0s'
+      const surplusWidth = this.surplusWidth = this.liWidth * this.config.data.items.length - document.body.scrollWidth
+      const centerMarginLeft = parseInt((document.body.scrollWidth - this.liWidth) / 2)
+      const bodyMarginLeft = parseInt(this.$refs.tab[this.activeIndex].offsetLeft + this.tabTransX)
+      let shouldTranslateX = parseInt(this.tabTransX) - (bodyMarginLeft - centerMarginLeft)
+      if (shouldTranslateX > 0 && shouldTranslateX + parseInt(this.tabTransX) > 0) {
+        shouldTranslateX = 0
+      } else if (shouldTranslateX > 0 && shouldTranslateX + parseInt(this.tabTransX) < 0) {
+        shouldTranslateX = 0
+      } else if (shouldTranslateX < -surplusWidth) {
+        shouldTranslateX = -surplusWidth
+      }
+      this.tabTransX = shouldTranslateX
+    },
     tap ({ item, index }) { // 点击选中
       if (index === this.activeIndex) return
       this.activeIndex = index
 
       this.$emit('callback', item)
+      if (this.config.data.items.length <= 4) return
+
+      this.tabPlace()
     }
   },
   mounted () {
     this.getLiWidth()
+    this.getLineRealWidth()
+    this.tabPlace()
   }
 }
 </script>
-<style lang="less" scoped>
+
+<style scoped>
 .line {
   position: absolute;
-  bottom: 0;
+  bottom: 0px;
   left: 0;
-  transition: all 0.2s ease;
+  transition: all 0.4s ease;
 }
 li {
   height: 1rem;
@@ -124,7 +200,8 @@ ul {
   display: flex;
   justify-content: space-around;
   overflow: hidden;
-  background: #FFF;
+  transition-timing-function: cubic-bezier(0.1, 0.57, 0.1, 1);
+  transition-duration: 400ms;
 }
 .tab {
   width: 100%;
