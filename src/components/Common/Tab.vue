@@ -40,7 +40,7 @@ export default {
         return {
           data: { // 数据
             items: [{ name: '手机通讯' }, { name: '折扣轻奢' }, { name: '家用电器' }, { name: '精品数吗' }, { name: '潮鞋箱包' }, { name: '食品保健' }, { name: '品质母婴' }, { name: '电脑办公' }], // 数据
-            width: '2.5rem',
+            width: '110px',
             name: 'name', // 如果为对象 展示key
             active: 0, // 选中位置
             color: '#999', // 字体颜色
@@ -49,8 +49,8 @@ export default {
           },
           line: { // 线
             use: true,
-            height: '0.08rem',
-            width: '0.5rem',
+            height: '3px',
+            width: '20px',
             color: '#A5884D'
           }
         }
