@@ -45,7 +45,8 @@ export default {
             active: 0, // 选中位置
             color: '#999', // 字体颜色
             background: '#FFF', // 背景颜色
-            highlight: '#A5884D' // * 高亮
+            highlight: '#A5884D', // * 高亮
+            style: {} // 自定义样式
           },
           line: { // 线
             use: true,
@@ -78,7 +79,8 @@ export default {
     },
     ulStyle () { // tab基本样式
       return {
-        background: this.config.data.background
+        background: this.config.data.background,
+        ...this.config.data.style
       }
     },
     defaultColor () { // 默认字体颜色
@@ -203,5 +205,7 @@ ul {
 .tab {
   width: 100%;
   overflow: hidden;
+  font-family: PingFangSC-Regular;
+  font-size: 14px;
 }
 </style>
