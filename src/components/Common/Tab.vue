@@ -14,7 +14,7 @@
       </li>
       <div ref="line"
            class="line"
-           v-if="config.line.use"
+           v-if="config.line && config.line.use"
            :style="[lineStyle, lineWidth, lineLeft]"></div>
     </ul>
   </div>
@@ -39,13 +39,10 @@ export default {
       default: () => {
         return {
           data: { // 数据
-            items: [{ name: 'AA' }, { name: 'BB' }, { name: 'CC' }, { name: 'DD' }, { name: 'EE' }, { name: 'AA' }, { name: 'BB' }, { name: 'CC' }], // 数据
-            // items: [{ name: 'AA' }, { name: 'BB' }, { name: 'CC' }, { name: 'DD' }], // 数据
-            // items: [{ name: 'AA' }, { name: 'BB' }],
-            // items: [{ name: 'AA' }, { name: 'BB' },{ name: 'AA' }, { name: 'BB' },{ name: 'AA' }, { name: 'BB' }],
+            items: [{ name: '手机通讯' }, { name: '折扣轻奢' }, { name: '家用电器' }, { name: '精品数吗' }, { name: '潮鞋箱包' }, { name: '食品保健' }, { name: '品质母婴' }, { name: '电脑办公' }], // 数据
             width: '2.5rem',
             name: 'name', // 如果为对象 展示key
-            active: 0, // * 选中位置
+            active: 0, // 选中位置
             color: '#999', // 字体颜色
             background: '#FFF', // 背景颜色
             highlight: '#A5884D' // * 高亮
@@ -53,7 +50,7 @@ export default {
           line: { // 线
             use: true,
             height: '0.08rem',
-            width: '1rem',
+            width: '0.5rem',
             color: '#A5884D'
           }
         }
@@ -147,7 +144,7 @@ export default {
       this.liWidth = this.$refs.tab[0].offsetWidth
     },
     getLineRealWidth () { // 获得线真实宽度
-      this.lineRealWidth = this.$refs.line.offsetWidth || this.$refs.tab[0].offsetWidth
+      this.lineRealWidth = this.$refs.line && (this.$refs.line.offsetWidth || this.$refs.tab[0].offsetWidth)
     },
     tabPlace () { // tab位置
       this.tabTransition = '-webkit-transform 0.4s linear 0s'
