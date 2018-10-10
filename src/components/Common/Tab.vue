@@ -1,21 +1,21 @@
 <template>
-  <div class="tab" :style="ulStyle">
+  <div class="tab" :style="BaseStyle">
     <ul :style="[ulStyle, ulWidth, ulTransform, ulTransition]"
         @touchstart="doTouchStart($event)"
         @touchmove="doTouchMove($event)"
         @touchend="doTouchEnd($event)">
       <li ref="tab"
-          v-for="(item, index) in config.data.items"
+          v-for="(item, index) in data"
           :key="index"
           :class="index === activeIndex ? 'active' : ''"
-          :style="index === activeIndex ? activeColor : defaultColor"
+          :style="index === activeIndex ? [activeColor, activeStyle] : defaultColor"
           @click="tap({ item, index })">
-        {{config.data.name ? item[config.data.name] : item}}
+        {{name ? item[name] : item}}
       </li>
       <div ref="line"
            class="line"
-           v-if="config.line && config.line.use"
-           :style="[lineStyle, lineWidth, lineLeft]"></div>
+           v-if="lineUse"
+           :style="[underlineStyle, underlineLeft]"></div>
     </ul>
   </div>
 </template>
@@ -28,34 +28,91 @@ export default {
       lineRealWidth: 0, // 线真实宽度
       tabTransX: 0, // tab x轴位置
       tabTransition: null, // tab 动画
-      activeIndex: this.config.data.active, // 选中元素的下标
+      activeIndex: this.active, // 选中元素的下标
       tabsIns: null,
       surplusWidth: 0
     }
   },
   props: {
-    config: { // 配置
+    data: { // * 数据
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    tabWidth: { // tab宽度
+      type: String,
+      default: '110px'
+    },
+    tabHeight: { // tab高度
+      type: String,
+      default: '40px'
+    },
+    tabColor: { // tab字体颜色
+      type: String,
+      default: '#999'
+    },
+    tabStyle: { // tab自定义样式
       type: Object,
       default: () => {
-        return {
-          data: { // 数据
-            items: [{ name: '手机通讯' }, { name: '折扣轻奢' }, { name: '家用电器' }, { name: '精品数吗' }, { name: '潮鞋箱包' }, { name: '食品保健' }, { name: '品质母婴' }, { name: '电脑办公' }], // 数据
-            width: '110px',
-            name: 'name', // 如果为对象 展示key
-            active: 0, // 选中位置
-            color: '#999', // 字体颜色
-            background: '#FFF', // 背景颜色
-            highlight: '#A5884D', // * 高亮
-            style: {} // 自定义样式
-          },
-          line: { // 线
-            use: true,
-            height: '3px',
-            width: '20px',
-            color: '#A5884D'
-          }
-        }
+        return {}
       }
+    },
+    fontSize: { // 字体大小
+      type: String,
+      default: '14px'
+    },
+    fontFamily: { // 字体
+      type: String,
+      default: 'PingFangSC-Regular'
+    },
+    name: { // 如果元素为对象 展示key
+      type: [String, Object],
+      default: null
+    },
+    active: { // 选中位置
+      type: [Number, String],
+      default: 0
+    },
+    background: { // 背景颜色
+      type: String,
+      default: '#FFF'
+    },
+    highlight: { // 高亮
+      type: String,
+      default: '#A5884D'
+    },
+    activeStyle: { // 选中自定义样式
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    lineUse: { // 底线是否使用
+      type: Boolean,
+      default: true
+    },
+    lineHeight: { // 底线高度
+      type: String,
+      default: '2px'
+    },
+    lineWidth: { // 底线宽度
+      type: [String, Object],
+      default: null
+    },
+    lineColor: { // 底线颜色
+      type: String,
+      default: '#A5884D'
+    },
+    lineStyle: { // 底线自定义样式
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    initCallback: { // 是否初始化执行callback
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -70,41 +127,45 @@ export default {
       }
     },
     ulWidth () { // tab宽度
-      const data = this.config.data
-      const unitArr = data.width ? this.getUnitArr(data.width) : null
+      const unitArr = this.tabWidth ? this.getUnitArr(this.tabWidth) : null
       const width = unitArr ? unitArr[1] : 0
       return {
-        width: data.items.length > 4 ? `${data.items.length * width}${unitArr[2]}` : '100%'
+        width: this.data.length > 4 ? `${this.data.length * width}${unitArr[2]}` : '100%'
+      }
+    },
+    BaseStyle () { // 根元素 基本样式
+      return {
+        background: this.background,
+        'font-size': this.fontSize,
+        'font-family': this.fontFamily
       }
     },
     ulStyle () { // tab基本样式
       return {
-        background: this.config.data.background,
-        ...this.config.data.style
+        height: this.tabHeight,
+        'line-height': this.tabHeight,
+        ...this.tabStyle
       }
     },
     defaultColor () { // 默认字体颜色
       return {
-        color: this.config.data.color
+        color: this.tabColor
       }
     },
     activeColor () { // 选中字体颜色
       return {
-        color: this.config.data.highlight
+        color: this.highlight
       }
     },
-    lineStyle () { // 线基本样式
+    underlineStyle () { // 线基本样式
       return {
-        height: this.config.line.height,
-        background: this.config.line.color
+        width: !this.lineWidth ? `${this.liWidth}px` : this.lineWidth,
+        height: this.lineHeight,
+        background: this.lineColor,
+        ...this.lineStyle
       }
     },
-    lineWidth () { // 线宽度
-      return {
-        width: !this.config.line.width ? `${this.liWidth}px` : this.config.line.width
-      }
-    },
-    lineLeft () { // 线位置
+    underlineLeft () { // 线位置
       return {
         left: `${this.activeIndex * this.liWidth + ((this.liWidth - this.lineRealWidth) / 2)}px`
       }
@@ -120,6 +181,7 @@ export default {
       }
     },
     doTouchMove (event) {
+      if (this.data.length <= 4) return
       event.preventDefault()
       const surplusWidth = this.surplusWidth
 
@@ -150,7 +212,7 @@ export default {
     },
     tabPlace () { // tab位置
       this.tabTransition = '-webkit-transform 0.4s linear 0s'
-      const surplusWidth = this.surplusWidth = this.liWidth * this.config.data.items.length - document.body.scrollWidth
+      const surplusWidth = this.surplusWidth = this.liWidth * this.data.length - document.body.scrollWidth
       const centerMarginLeft = parseInt((document.body.scrollWidth - this.liWidth) / 2)
       const bodyMarginLeft = parseInt(this.$refs.tab[this.activeIndex].offsetLeft + this.tabTransX)
       let shouldTranslateX = parseInt(this.tabTransX) - (bodyMarginLeft - centerMarginLeft)
@@ -167,16 +229,23 @@ export default {
       if (index === this.activeIndex) return
       this.activeIndex = index
 
+      this.$emit('update:active', index)
       this.$emit('callback', item)
-      if (this.config.data.items.length <= 4) return
+
+      if (this.data.length <= 4) return
 
       this.tabPlace()
+    },
+    getCurrData () { // 获得当前数据
+      this.$emit('callback', this.data[this.activeIndex])
     }
   },
   mounted () {
     this.getLiWidth()
     this.getLineRealWidth()
     this.tabPlace()
+
+    this.initCallback && this.getCurrData()
   }
 }
 </script>
@@ -189,8 +258,6 @@ export default {
   transition: all 0.4s ease;
 }
 li {
-  height: 1rem;
-  line-height: 1rem;
   width: 100%;
   text-align: center;
 }
@@ -205,7 +272,5 @@ ul {
 .tab {
   width: 100%;
   overflow: hidden;
-  font-family: PingFangSC-Regular;
-  font-size: 14px;
 }
 </style>
