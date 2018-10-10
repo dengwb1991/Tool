@@ -1,7 +1,7 @@
 <template>
   <div class="example">
     <p class="title">Multiple</p>
-    <Tab :data="data"
+    <DwbVueTab :data="data"
          :active.sync="active"
          :initCallback="initCallback"
          :tabWidth="tabWidth"

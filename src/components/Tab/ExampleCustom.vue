@@ -1,7 +1,7 @@
 <template>
   <div class="example">
     <p class="title">Custom</p>
-    <Tab :data="data"
+    <DwbVueTab :data="data"
          :active.sync="active"
          :initCallback="initCallback"
          :background="background"
@@ -15,7 +15,6 @@
 
 <script>
 import Params from './Params'
-
 export default {
   components: {
     Params

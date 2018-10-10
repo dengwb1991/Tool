@@ -9,6 +9,7 @@ import camelCase from 'lodash/camelCase'
 
 import city from 'dwb-city'
 // import drawer from 'dwb-vue-drawer'
+import TabBar from 'dwb-vue-tab'
 
 const requireComponent = require.context('./components/Common', false, /[a-zA-Z]*\.vue/)
 
@@ -21,6 +22,7 @@ requireComponent.keys().forEach(fileName => {
 })
 
 Vue.use(city)
+Vue.use(TabBar)
 // Vue.use(drawer)
 Vue.config.productionTip = false
 
