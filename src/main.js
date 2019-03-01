@@ -8,9 +8,10 @@ import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
 
 import city from 'dwb-city'
-// import drawer from 'dwb-vue-drawer'
 import TabBar from 'dwb-vue-tab'
-
+import Button from 'owl-ui/lib/button/button.js'
+import 'owl-ui/lib/button/button.css'
+// import 'owl-ui/lib/styles/owl-ui.css'
 const requireComponent = require.context('./components/Common', false, /[a-zA-Z]*\.vue/)
 
 requireComponent.keys().forEach(fileName => {
@@ -23,7 +24,7 @@ requireComponent.keys().forEach(fileName => {
 
 Vue.use(city)
 Vue.use(TabBar)
-// Vue.use(drawer)
+Vue.use(Button)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

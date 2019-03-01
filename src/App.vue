@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <owl-button :text="'按钮'"/>
     <router-view/>
   </div>
 </template>
